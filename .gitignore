@@ -1,0 +1,16 @@
+# Node modules
+node_modules/
+client/node_modules/
+server/node_modules/
+
+# Database
+*.db
+*.db-journal
+
+# Build output
+client/dist/
+
+# Env files
+.env
+.env.local
+.DS_Store
