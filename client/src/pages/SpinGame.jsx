@@ -78,9 +78,11 @@ export default function SpinGame() {
 
     setTimeout(() => {
       const normalizedDeg = degrees % 360;
-      const segmentIndex = Math.floor(normalizedDeg / (360 / wheelSegments.length));
-      const reversedIndex = (wheelSegments.length - segmentIndex) % wheelSegments.length;
-      const won = wheelSegments[reversedIndex];
+      // The pointer is at the top (270 degrees). 
+      // To find the segment under the pointer, we calculate which original degree ended up at 270.
+      const actualDegree = (270 - normalizedDeg + 360) % 360;
+      const segmentIndex = Math.floor(actualDegree / (360 / wheelSegments.length));
+      const won = wheelSegments[segmentIndex];
 
       addPoints(won.value);
 
