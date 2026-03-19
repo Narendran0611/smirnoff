@@ -14,8 +14,14 @@ import talentDanceImg from './assets/talent-dance.png';
 import talentHypemanImg from './assets/talent-hypeman.png';
 import talentProducerImg from './assets/talent-producer.png';
 import gamesSpinnerImg from './assets/games-spinner.png';
-import smirnoffBottleImg from './assets/smirnoff-bottle.png';
-import smirnoffCansImg from './assets/smirnoff-cans.png';
+import smirnoffIceLemonRefreshImg from './assets/smirnoff_ice_lemon_refresh.png';
+import smirnoffIceRedPartyImg from './assets/smirnoff_ice_red_party.png';
+import smirnoffIcePartyImg from './assets/smirnoff_ice_party.png';
+import smirnoffIceBeachImg from './assets/smirnoff_ice_beach.png';
+import smirnoffIceCollectionImg from './assets/smirnoff_ice_collection.png';
+import smirnoffIceGreenAppleImg from './assets/smirnoff_ice_green_apple.png';
+import smirnoffIceOriginalImg from './assets/smirnoff_ice_original.png';
+import smirnoffIceTropicalImg from './assets/smirnoff_ice_tropical.png';
 import smirnoffPopImg from './assets/smirnoff-pop.png';
 import singleCanImg from './assets/Can.png';
 import canBgImg from './assets/can_bg.png';
@@ -41,8 +47,14 @@ const assets = {
   talentHypeman: talentHypemanImg,
   talentProducer: talentProducerImg,
   gamesSpinner: gamesSpinnerImg,
-  smirnoffBottle: smirnoffBottleImg,
-  smirnoffCans: smirnoffCansImg,
+  smirnoff_ice_lemon_refresh: smirnoffIceLemonRefreshImg,
+  smirnoff_ice_red_party: smirnoffIceRedPartyImg,
+  smirnoff_ice_party: smirnoffIcePartyImg,
+  smirnoff_ice_beach: smirnoffIceBeachImg,
+  smirnoff_ice_collection: smirnoffIceCollectionImg,
+  smirnoff_ice_green_apple: smirnoffIceGreenAppleImg,
+  smirnoff_ice_original: smirnoffIceOriginalImg,
+  smirnoff_ice_tropical: smirnoffIceTropicalImg,
   smirnoffPop: smirnoffPopImg,
   singleCan: singleCanImg,
   canBg: canBgImg,
@@ -51,6 +63,7 @@ const assets = {
   landingNew: landingNewImg,
   eventPageBg: eventPageBgImg,
   talentBg: talentBgImg,
+  smirnoffBottle: smirnoffIceOriginalImg,
 };
 
 export default assets;

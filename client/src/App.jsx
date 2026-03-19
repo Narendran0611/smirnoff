@@ -25,9 +25,12 @@ function ScrollToTop() {
   return null;
 }
 
+import AgeGate from './components/AgeGate';
+
 function AppContent() {
   return (
     <>
+      <AgeGate />
       <ScrollToTop />
       <Header />
       <main id="content">

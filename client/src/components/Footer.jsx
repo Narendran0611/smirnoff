@@ -1,34 +1,66 @@
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import assets from '../assets';
 
 export default function Footer() {
+  const location = useLocation();
+  const isHome = location.pathname === '/';
+
   return (
     <footer className="site-footer">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="footer-how-it-works">
-          <Link to="/shop" className="footer-step" style={{ textDecoration: 'none', color: 'inherit' }}>
-            <div className="footer-step-num">1</div>
-            <span className="footer-step-text">Buy Smirnoff Ice</span>
-          </Link>
-          <div className="footer-step-divider"></div>
-          <div className="footer-step-divider-mobile"></div>
-          <Link to="/code" className="footer-step" style={{ textDecoration: 'none', color: 'inherit' }}>
-            <div className="footer-step-num">2</div>
-            <span className="footer-step-text">Enter Code</span>
-          </Link>
-          <div className="footer-step-divider"></div>
-          <div className="footer-step-divider-mobile"></div>
-          <Link to="/games" className="footer-step" style={{ textDecoration: 'none', color: 'inherit' }}>
-            <div className="footer-step-num">3</div>
-            <span className="footer-step-text">Earn Points</span>
-          </Link>
-          <div className="footer-step-divider"></div>
-          <div className="footer-step-divider-mobile"></div>
-          <Link to="/rewards" className="footer-step" style={{ textDecoration: 'none', color: 'inherit' }}>
-            <div className="footer-step-num">4</div>
-            <span className="footer-step-text">Win Rewards</span>
-          </Link>
-        </div>
+        {isHome && (
+          <div className="footer-how-it-works">
+            <Link to="/shop" className="footer-step">
+              <div className="footer-step-icon-wrapper">
+                <img src={assets.iconBuy} alt="Buy" className="footer-step-icon" />
+                <div className="footer-step-num">1</div>
+              </div>
+              <div className="footer-step-info">
+                <span className="footer-step-label">Step 01</span>
+                <span className="footer-step-text">Buy Smirnoff Ice</span>
+              </div>
+            </Link>
+            
+            <div className="footer-step-divider"></div>
+
+            <Link to="/code" className="footer-step">
+              <div className="footer-step-icon-wrapper">
+                <img src={assets.iconEnter} alt="Enter" className="footer-step-icon" />
+                <div className="footer-step-num">2</div>
+              </div>
+              <div className="footer-step-info">
+                <span className="footer-step-label">Step 02</span>
+                <span className="footer-step-text">Enter Code</span>
+              </div>
+            </Link>
+            
+            <div className="footer-step-divider"></div>
+
+            <Link to="/games" className="footer-step">
+              <div className="footer-step-icon-wrapper">
+                <img src={assets.iconPoints} alt="Earn" className="footer-step-icon" />
+                <div className="footer-step-num">3</div>
+              </div>
+              <div className="footer-step-info">
+                <span className="footer-step-label">Step 03</span>
+                <span className="footer-step-text">Earn Points</span>
+              </div>
+            </Link>
+            
+            <div className="footer-step-divider"></div>
+
+            <Link to="/rewards" className="footer-step">
+              <div className="footer-step-icon-wrapper">
+                <img src={assets.iconRewards} alt="Win" className="footer-step-icon" />
+                <div className="footer-step-num">4</div>
+              </div>
+              <div className="footer-step-info">
+                <span className="footer-step-label">Step 04</span>
+                <span className="footer-step-text">Win Rewards</span>
+              </div>
+            </Link>
+          </div>
+        )}
 
         <div className="footer-links">
           <div className="footer-links-col">

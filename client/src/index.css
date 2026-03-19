@@ -21,6 +21,28 @@
 /* ===== COMPONENT LAYER ===== */
 @layer components {
 
+  @keyframes scaleIn {
+    0% { transform: scale(0.9); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  @keyframes pulseSlow {
+    0%, 100% { opacity: 0.1; }
+    50% { opacity: 0.2; }
+  }
+
+  .animate-scale-in {
+    animation: scaleIn 0.5s cubic-bezier(0.17, 0.67, 0.12, 0.99) forwards;
+  }
+
+  .animate-pulse-slow {
+    animation: pulseSlow 4s ease-in-out infinite;
+  }
+
+  .hover-scale:hover {
+    transform: scale(1.02);
+  }
+
   /* --- Smirnoff Badge / Logo --- */
   .smirnoff-badge {
     @apply inline-block bg-smirnoff-red text-white py-1.5 px-5 font-accent font-black uppercase text-lg tracking-wider no-underline transition-transform duration-300 hover:scale-105;
@@ -488,41 +510,53 @@
     border-color: rgba(0,0,0,0.06);
   }
   .footer-how-it-works {
-    @apply flex flex-col md:flex-row justify-between items-center mb-16 rounded-2xl;
-    background: #F5F5F5;
-    padding: 2rem;
-    gap: 1.5rem;
+    @apply flex flex-col md:flex-row justify-between items-center mb-16 rounded-3xl border;
+    background: #FFFFFF;
+    border-color: rgba(0,0,0,0.05);
+    padding: 3rem 2rem;
+    gap: 2rem;
+    box-shadow: 0 1.25rem 3.125rem rgba(0,0,0,0.03);
   }
   .footer-step {
-    @apply flex items-center gap-4 cursor-pointer;
-    transition: transform 0.3s ease;
+    @apply flex flex-col md:flex-row items-center gap-6 cursor-pointer text-center md:text-left no-underline text-inherit;
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    flex: 1;
   }
-  .footer-step:hover { transform: translateY(-0.1875rem); }
+  .footer-step:hover { transform: translateY(-0.5rem); }
+  .footer-step-icon-wrapper {
+    @apply relative flex-shrink-0;
+  }
+  .footer-step-icon {
+    @apply w-16 h-16 object-contain;
+    filter: drop-shadow(0 0.5rem 1rem rgba(0,0,0,0.08));
+    transition: filter 0.3s ease;
+  }
+  .footer-step:hover .footer-step-icon {
+    filter: drop-shadow(0 1rem 1.5rem rgba(211, 47, 47, 0.2));
+  }
   .footer-step-num {
-    @apply bg-smirnoff-red text-white rounded-full flex items-center justify-center font-accent font-black;
-    width: 2.5rem; height: 2.5rem;
-    font-size: 1.2rem;
-    box-shadow: 0 0.25rem 0.625rem rgba(211, 47, 47, 0.35);
+    @apply absolute -top-1 -right-1 bg-smirnoff-red text-white rounded-full flex items-center justify-center font-bold;
+    width: 1.5rem; height: 1.5rem;
+    font-size: 0.75rem;
+    box-shadow: 0 0.25rem 0.5rem rgba(211, 47, 47, 0.4);
+    border: 0.125rem solid white;
+  }
+  .footer-step-info {
+    @apply flex flex-col gap-1;
+  }
+  .footer-step-label {
+    @apply text-smirnoff-red font-bold text-[0.65rem] uppercase tracking-wider block;
   }
   .footer-step-text {
-    @apply font-bold uppercase;
-    font-size: 0.85rem;
-    letter-spacing: 0.0625rem;
+    @apply font-black uppercase text-gray-800;
+    font-size: 0.95rem;
+    letter-spacing: 0.03125rem;
   }
   .footer-step-divider {
-    @apply hidden md:block flex-grow opacity-50;
-    height: 0.125rem;
-    background: repeating-linear-gradient(to right, transparent, transparent 0.25rem, #ccc 0.25rem, #ccc 0.5rem);
-    margin: 0 1.5rem;
-  }
-  /* Mobile divider arrow */
-  .footer-step-divider-mobile {
-    @apply block md:hidden;
-    width: 0; height: 0;
-    border-left: 0.5rem solid transparent;
-    border-right: 0.5rem solid transparent;
-    border-top: 0.75rem solid #D32F2F;
-    margin: 0.5rem 0;
+    @apply hidden md:block opacity-10;
+    width: 2rem; height: 1px;
+    background: #000;
+    flex-shrink: 0;
   }
   .footer-links {
     @apply flex flex-col md:flex-row justify-around mb-12 flex-wrap text-center md:text-left;
@@ -559,14 +593,35 @@ body.dark-mode .site-footer {
   border-top: 1px solid rgba(255,255,255,0.05); 
 }
 body.dark-mode .footer-how-it-works { 
-  @apply bg-[#0c0c0c]; 
-  border: 1px solid rgba(255,255,255,0.05); 
+  @apply bg-[#111111]/80 backdrop-blur-xl border-white/5;
+  box-shadow: 0 1.25rem 3.125rem rgba(0,0,0,0.4);
 }
-body.dark-mode .footer-step-text { @apply text-gray-300; }
-body.dark-mode .footer-links-col h4 { @apply text-white; }
-body.dark-mode .footer-links-col a { @apply text-gray-500; }
-body.dark-mode .footer-step-divider { @apply opacity-10; }
-body.dark-mode .footer-bottom { border-top: 1px solid rgba(255,255,255,0.05); }
+body.dark-mode .footer-step-text { @apply text-white; }
+body.dark-mode .footer-step-num { border-color: #111; }
+body.dark-mode .footer-step-divider { @apply bg-white opacity-10; }
+
+/* --- Global Sub-Components Dark Mode Fixes --- */
+body.dark-mode .shop-card,
+body.dark-mode .stat-card,
+body.dark-mode .history-panel,
+body.dark-mode .gallery-card,
+body.dark-mode .game-card,
+body.dark-mode .reward-item,
+body.dark-mode .leaderboard-panel {
+  @apply bg-[#111111] text-white;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+  border: 1px solid rgba(255,255,255,0.05);
+}
+
+body.dark-mode .history-item { border-color: rgba(255,255,255,0.05); }
+body.dark-mode .history-item:hover { background: rgba(255,255,255,0.02); }
+body.dark-mode .leaderboard-table th, 
+body.dark-mode .leaderboard-table td { border-color: rgba(255,255,255,0.05); }
+body.dark-mode .history-item-info h4 { @apply text-gray-200; }
+body.dark-mode .game-card-body h3,
+body.dark-mode .gallery-card-info h4,
+body.dark-mode .shop-card h3,
+body.dark-mode .reward-item h3 { @apply text-white; }
 
 /* --- SMOOTH TRANSITION --- */
 body, .site-header, .site-footer, .footer-how-it-works, a, p, h1, h2, h3, h4 {

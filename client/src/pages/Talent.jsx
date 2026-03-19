@@ -15,14 +15,17 @@ export default function Talent() {
 
   return (
     <>
-      <section className="animate-fade-in w-screen -ml-[50vw] left-[50%] relative min-h-[40vh] sm:min-h-[50vh] md:min-h-[60vh] flex items-center justify-center overflow-hidden pt-[4.375rem]">
-        <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-[1]">
-          <img
-            src={assets.talentBg}
-            alt="Smirnoff Chill Talent Academy"
-            className="w-full h-full object-cover"
-            style={{ transform: 'scale(1.06) translate(2%,2%)' }}
-          />
+      <section className="animate-fade-in pt-24 sm:pt-32 pb-8 px-4 sm:px-6">
+        <div className="max-w-[90%] sm:max-w-[80%] mx-auto relative overflow-hidden rounded-2xl shadow-2xl border border-white/10 group">
+          <div className="aspect-[21/9] sm:aspect-[3/1] relative">
+            <img
+              src={assets.talentBg}
+              alt="Smirnoff Chill Talent Academy"
+              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+            />
+            {/* Dark overlay for text readability if needed */}
+            <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/60 to-transparent pointer-events-none" />
+          </div>
         </div>
       </section>
 
