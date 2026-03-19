@@ -1,11 +1,43 @@
 import { useParams, Link } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
 import assets from '../assets';
+import BackendService from '../services/BackendService';
 
 export default function EventDetail() {
   const { id } = useParams();
-  const { eventsData } = useAppContext();
+  const { eventsData, user, setUser, addToast } = useAppContext();
   const event = eventsData.find(e => e.id === parseInt(id)) || eventsData[0];
+
+  const handleUsePass = async () => {
+    console.log('USE ICEPASS clicked for:', event.title);
+    if (!user) return addToast('Please enter your phone number first!', 'error');
+    if (user.ice_pass_count <= 0) return addToast('You have no IcePasses! Enter codes to win some.', 'error');
+
+    const res = await BackendService.useIcePass(user.phone, event.title);
+    if (res.success) {
+      addToast(`🎟️ Entry Confirmed! Your digital ticket for ${event.title} has been sent to your mail.`, 'success');
+      const updatedUser = await BackendService.getUser(user.phone);
+      if (updatedUser) setUser(updatedUser);
+    } else {
+      addToast(res.message, 'error');
+    }
+  };
+
+  const handleRedeemTicket = async () => {
+    console.log('REDEEM POINTS clicked for:', event.title);
+    if (!user) return addToast('Please enter your phone number first!', 'error');
+    const ticketCost = 500; // Standard ticket cost
+    if (user.points < ticketCost) return addToast(`You need ${ticketCost} points for a ticket!`, 'error');
+
+    const res = await BackendService.redeemPoints(user.phone, ticketCost, `Ticket: ${event.title}`);
+    if (res.success) {
+      addToast(`✅ Success! 500 points deducted. Your ticket for ${event.title} has been sent to your mail.`, 'success');
+      const updatedUser = await BackendService.getUser(user.phone);
+      if (updatedUser) setUser(updatedUser);
+    } else {
+      addToast(res.message || 'Redemption failed.', 'error');
+    }
+  };
 
   return (
     <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 animate-fade-in pt-28 sm:pt-32 pb-20 min-h-screen">
@@ -44,9 +76,14 @@ export default function EventDetail() {
             </div>
           </div>
           <div className="flex gap-3 sm:gap-4 flex-wrap mt-8">
-            {event.icePass && <button className="btn btn-gold btn-sm">USE ICEPASS</button>}
-            <button className="btn btn-sm">BUY TICKET</button>
-            <button className="btn btn-outline btn-sm">REDEEM POINTS</button>
+            {event.icePass && (
+              <button className="btn btn-gold btn-sm" onClick={handleUsePass}>
+                USE ICEPASS ({user?.ice_pass_count || 0})
+              </button>
+            )}
+            <button className="btn btn-sm" onClick={handleRedeemTicket}>
+              REDEEM POINTS (500 PTS)
+            </button>
           </div>
           <div className="mt-12 text-right hidden sm:block">
             <img

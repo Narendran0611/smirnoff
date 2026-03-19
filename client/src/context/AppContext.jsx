@@ -93,6 +93,7 @@ export function AppProvider({ children }) {
     voteTalent,
     toast,
     showToast,
+    addToast: showToast, // Alias for compatibility
     darkMode,
     toggleDarkMode,
   };

@@ -18,6 +18,13 @@ app.use(express.static(path.join(__dirname, '../client/dist')));
 // ==============================
 const dbPath = path.join(__dirname, 'smirnoff.db');
 const db = new Database(dbPath);
+console.log('✅ Backend Database Connected at:', dbPath);
+
+// GLOBAL REPAIR: Ensure all columns exist every time the server starts
+try { db.exec("ALTER TABLE transactions ADD COLUMN status TEXT DEFAULT 'completed'"); } catch (e) {}
+try { db.exec("ALTER TABLE transactions ADD COLUMN date TEXT"); } catch (e) {}
+try { db.exec("ALTER TABLE users ADD COLUMN ice_pass_count INTEGER DEFAULT 0"); } catch (e) {}
+console.log('✅ Database Schema verified and repaired.');
 
 // Enable WAL mode for performance
 db.pragma('journal_mode = WAL');
@@ -25,12 +32,10 @@ db.pragma('journal_mode = WAL');
 // Create tables
 db.exec(`
   CREATE TABLE IF NOT EXISTS users (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    phone TEXT UNIQUE NOT NULL,
-    name TEXT DEFAULT 'Chill Fam',
+    phone TEXT PRIMARY KEY,
     points INTEGER DEFAULT 0,
-    ice_pass TEXT DEFAULT 'Inactive',
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    ice_pass_count INTEGER DEFAULT 0,
+    created_at TEXT
   );
 
   CREATE TABLE IF NOT EXISTS codes (
@@ -50,7 +55,8 @@ db.exec(`
     type TEXT NOT NULL,
     label TEXT NOT NULL,
     points INTEGER DEFAULT 0,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    date TEXT,
+    status TEXT DEFAULT 'completed'
   );
 
   CREATE TABLE IF NOT EXISTS talents (
@@ -113,8 +119,8 @@ if (codeCount.count === 0) {
 
 const userCount = db.prepare('SELECT COUNT(*) as count FROM users').get();
 if (userCount.count === 0) {
-  db.prepare('INSERT INTO users (phone, name, points, ice_pass) VALUES (?, ?, ?, ?)').run(
-    '08012345678', 'Chill Fam', 1250, 'Active'
+  db.prepare('INSERT INTO users (phone, points, ice_pass_count, created_at) VALUES (?, ?, ?, ?)').run(
+    '08012345678', 1250, 1, new Date().toISOString()
   );
   console.log('✅ Seeded default user.');
 }
@@ -138,7 +144,6 @@ if (talentCount.count === 0) {
     }
   });
   insertMany(talents);
-  console.log('✅ Seeded 8 talents.');
 }
 
 // ==============================
@@ -147,7 +152,7 @@ if (talentCount.count === 0) {
 const getOrCreateUser = (phone) => {
   let user = db.prepare('SELECT * FROM users WHERE phone = ?').get(phone);
   if (!user) {
-    db.prepare('INSERT INTO users (phone) VALUES (?)').run(phone);
+    db.prepare('INSERT INTO users (phone, created_at) VALUES (?, ?)').run(phone, new Date().toISOString());
     user = db.prepare('SELECT * FROM users WHERE phone = ?').get(phone);
   }
   return user;
@@ -165,9 +170,9 @@ app.post('/api/validate-code', (req, res) => {
     return res.json({ success: false, message: 'Code and phone number are required.' });
   }
 
-  const codeEntry = db.prepare('SELECT * FROM codes WHERE UPPER(code) = UPPER(?) AND used = 0').get(code);
+  const codeRecord = db.prepare('SELECT * FROM codes WHERE UPPER(code) = UPPER(?) AND used = 0').get(code);
 
-  if (!codeEntry) {
+  if (!codeRecord) {
     // Check if code exists but is used
     const usedCode = db.prepare('SELECT * FROM codes WHERE UPPER(code) = UPPER(?) AND used = 1').get(code);
     if (usedCode) {
@@ -177,24 +182,37 @@ app.post('/api/validate-code', (req, res) => {
   }
 
   // Mark code as used
-  db.prepare('UPDATE codes SET used = 1, used_by = ?, used_at = CURRENT_TIMESTAMP WHERE id = ?').run(phone, codeEntry.id);
+  db.prepare('UPDATE codes SET used = 1, used_by = ?, used_at = CURRENT_TIMESTAMP WHERE id = ?').run(phone, codeRecord.id);
 
   // Update user points
   const user = getOrCreateUser(phone);
-  db.prepare('UPDATE users SET points = points + ? WHERE phone = ?').run(codeEntry.points, phone);
+  // db.prepare('UPDATE users SET points = points + ? WHERE phone = ?').run(codeEntry.points, phone);
 
   // Log transaction
-  db.prepare('INSERT INTO transactions (phone, type, label, points) VALUES (?, ?, ?, ?)').run(
-    phone, 'code', `Code: ${code.toUpperCase()}`, codeEntry.points
-  );
+  // db.prepare('INSERT INTO transactions (phone, type, label, points) VALUES (?, ?, ?, ?)').run(
+  //   phone, 'code', `Code: ${code.toUpperCase()}`, codeEntry.points
+  // );
 
-  res.json({
+  // Determined rewards based on luck
+  const hasWonPass = Math.random() < 0.25; // 25% chance for IcePass
+  const pointsToAdd = Math.floor(Math.random() * 50) + 10; // 10-60 points
+
+  const updateUsers = db.prepare('UPDATE users SET points = points + ?, ice_pass_count = ice_pass_count + ? WHERE phone = ?');
+  // const deleteCode = db.prepare('DELETE FROM codes WHERE code = ?'); // No, we mark it as used
+  const logTransaction = db.prepare('INSERT INTO transactions (phone, type, points, label, date, status) VALUES (?, ?, ?, ?, ?, ?)');
+
+  const transaction = db.transaction(() => {
+    updateUsers.run(pointsToAdd, hasWonPass ? 1 : 0, phone);
+    // deleteCode.run(code); // No, we mark it as used
+    logTransaction.run(phone, 'code_entry', pointsToAdd, `Code Win ${hasWonPass ? '+ IcePass' : ''}`, new Date().toISOString(), 'completed');
+  });
+  transaction();
+
+  return res.json({
     success: true,
-    points: codeEntry.points,
-    prize: codeEntry.prize || null,
-    message: codeEntry.prize
-      ? `You just won ${codeEntry.prize}! Your chill just got real.`
-      : `You just earned ${codeEntry.points} Ice Points! Keep popping. Keep winning.`
+    message: hasWonPass ? `YOU WON! ${pointsToAdd} Points AND an IcePass! 🧊` : `Success! ${pointsToAdd} points added.`,
+    pointsWon: pointsToAdd,
+    wonPass: hasWonPass
   });
 });
 
@@ -203,32 +221,64 @@ app.get('/api/user/:phone', (req, res) => {
   const user = db.prepare('SELECT * FROM users WHERE phone = ?').get(req.params.phone);
   if (!user) return res.status(404).json({ message: 'User not found' });
 
-  const history = db.prepare('SELECT * FROM transactions WHERE phone = ? ORDER BY created_at DESC LIMIT 20').all(req.params.phone);
+  const history = db.prepare('SELECT * FROM transactions WHERE phone = ? ORDER BY date DESC LIMIT 20').all(req.params.phone);
   res.json({ ...user, history });
 });
 
 // --- Points Redemption ---
 app.post('/api/redeem', (req, res) => {
+  console.log('🚀 Redeeming points:', req.body);
   const { phone, cost, label } = req.body;
 
-  if (!phone || !cost || !label) {
-    return res.json({ success: false, message: 'Missing redemption details.' });
+  if (!phone || !cost || !label) return res.status(400).json({ error: 'Missing logic' });
+
+  try {
+    const user = db.prepare('SELECT points FROM users WHERE phone = ?').get(phone);
+    if (!user || user.points < cost) return res.status(400).json({ error: 'Insufficient points' });
+
+    // Mark AirPods/Physical as pending, Digital as completed
+    const isPhysical = label.toLowerCase().includes('airpod') || label.toLowerCase().includes('ticket');
+    const status = isPhysical ? 'pending' : 'completed';
+
+    const updatePoints = db.prepare('UPDATE users SET points = points - ? WHERE phone = ?');
+    const logTransaction = db.prepare('INSERT INTO transactions (phone, type, points, label, date, status) VALUES (?, ?, ?, ?, ?, ?)');
+
+    const transaction = db.transaction(() => {
+      updatePoints.run(cost, phone);
+      logTransaction.run(phone, 'redemption', -cost, label, new Date().toISOString(), status);
+    });
+    transaction();
+
+    res.json({ success: true, message: `Redeemed ${label} successfully!`, status });
+  } catch (err) {
+    console.error('❌ Redemption error:', err);
+    res.status(500).json({ error: 'Database error: ' + err.message });
   }
+});
 
-  const user = getOrCreateUser(phone);
-  if (user.points < cost) {
-    return res.json({ success: false, message: 'Insufficient points balance.' });
+// Endpoint to use an IcePass for an event
+app.post('/api/use-pass', (req, res) => {
+  console.log('🚀 Using IcePass:', req.body);
+  const { phone, eventName } = req.body;
+  try {
+    const user = db.prepare('SELECT ice_pass_count FROM users WHERE phone = ?').get(phone);
+    if (!user || user.ice_pass_count < 1) {
+      return res.status(400).json({ success: false, message: 'No IcePasses available.' });
+    }
+
+    const consumePass = db.prepare('UPDATE users SET ice_pass_count = ice_pass_count - 1 WHERE phone = ?');
+    const logTransaction = db.prepare('INSERT INTO transactions (phone, type, points, label, date, status) VALUES (?, ?, ?, ?, ?, ?)');
+
+    const transaction = db.transaction(() => {
+      consumePass.run(phone);
+      logTransaction.run(phone, 'event_entry', 0, `Used IcePass for ${eventName}`, new Date().toISOString(), 'completed');
+    });
+    transaction();
+
+    res.json({ success: true, message: 'Your IcePass has been successfully applied!' });
+  } catch (err) {
+    res.status(500).json({ error: 'Database error' });
   }
-
-  // Deduct points
-  db.prepare('UPDATE users SET points = points - ? WHERE phone = ?').run(cost, phone);
-
-  // Log transaction
-  db.prepare('INSERT INTO transactions (phone, type, label, points) VALUES (?, ?, ?, ?)').run(
-    phone, 'redeem', `${label} Redeemed`, -cost
-  );
-
-  res.json({ success: true, message: `${label} successfully redeemed!` });
 });
 
 // --- Talent: Submit ---
@@ -287,7 +337,7 @@ app.post('/api/games/spin', (req, res) => {
   const { phone } = req.body;
   const prizes = [5, 10, 2, 50, 5, 20, 0, 100];
   const weights = [25, 20, 25, 3, 15, 8, 3, 1]; // weights determine probability
-  
+
   // Weighted random pick
   const totalWeight = weights.reduce((a, b) => a + b, 0);
   let random = Math.random() * totalWeight;
@@ -305,8 +355,8 @@ app.post('/api/games/spin', (req, res) => {
     getOrCreateUser(phone);
     if (pointsWon > 0) {
       db.prepare('UPDATE users SET points = points + ? WHERE phone = ?').run(pointsWon, phone);
-      db.prepare('INSERT INTO transactions (phone, type, label, points) VALUES (?, ?, ?, ?)').run(
-        phone, 'game', 'Spin Wheel Win', pointsWon
+      db.prepare('INSERT INTO transactions (phone, type, label, points, date, status) VALUES (?, ?, ?, ?, ?, ?)').run(
+        phone, 'game', 'Spin Wheel Win', pointsWon, new Date().toISOString(), 'completed'
       );
     }
     db.prepare('INSERT INTO game_spins (phone, points_won) VALUES (?, ?)').run(phone, pointsWon);

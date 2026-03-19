@@ -81,6 +81,18 @@ const BackendService = {
     } catch (err) {
       return { success: false, message: 'Spin failed.' };
     }
+  },
+  useIcePass: async (phone, eventName) => {
+    try {
+      const res = await fetch(`${API_BASE}/use-pass`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone, eventName })
+      });
+      return await res.json();
+    } catch (err) {
+      return { success: false, message: 'Server unreachable.' };
+    }
   }
 };
 

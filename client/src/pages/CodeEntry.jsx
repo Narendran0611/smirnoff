@@ -19,21 +19,24 @@ export default function CodeEntry() {
     const result = await BackendService.validateCode(code.trim(), user.phone);
 
     if (result.success) {
-      addPoints(result.points);
-      if (result.prize) {
+      // Refresh user data from server to get new points + icePassCount
+      const updatedUser = await BackendService.getUser(user.phone);
+      if (updatedUser) setUser(updatedUser);
+
+      if (result.wonPass) {
         setFeedback({
           type: 'prize',
-          prize: result.prize,
-          points: result.points,
+          prize: 'VIP ICEPASS 🎫',
+          points: result.pointsWon,
         });
       } else {
         setFeedback({
           type: 'success',
-          points: result.points,
+          points: result.pointsWon,
         });
       }
       setCode('');
-      showToast(`+${result.points} points added!`);
+      showToast(`+${result.pointsWon} points added!`);
     } else {
       setFeedback({
         type: 'error',
