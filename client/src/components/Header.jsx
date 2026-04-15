@@ -22,9 +22,11 @@ export default function Header() {
   return (
     <header className="site-header">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full flex justify-between items-center">
-        <div className="flex items-center gap-8">
-          <Link to="/" className="smirnoff-badge" onClick={closeNav}>SMIRNOFF ICE</Link>
-        </div>
+          <div className="flex items-center gap-8">
+            <Link to="/" className="flex items-center" onClick={closeNav}>
+              <img src={assets.logoSmirnoffIce} alt="Smirnoff Ice" className="h-12 sm:h-16" />
+            </Link>
+          </div>
         <nav className="flex items-center gap-4 sm:gap-8">
           <ul className="nav-links" id="nav-links">
             <li><Link to="/" className={currentPath === '/' ? 'active' : ''} onClick={closeNav}>Home</Link></li>

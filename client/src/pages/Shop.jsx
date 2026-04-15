@@ -1,6 +1,34 @@
 import assets from '../assets';
 
 export default function Shop() {
+  const products = [
+    {
+      name: 'Original Can',
+      desc: 'The classic crisp and refreshing flavor',
+      img: assets.product440mlOriginal,
+    },
+    {
+      name: 'Guaraná Can',
+      desc: 'Bold Brazilian Guaraná flavor with a twist',
+      img: assets.product440mlGaurana,
+    },
+    {
+      name: 'Green Apple Bottle',
+      desc: 'A vivid, tart green apple sensation',
+      img: assets.smirnoff_ice_green_apple,
+    },
+    {
+      name: 'Tropical Bottle',
+      desc: 'A vibrant burst of tropical fruits',
+      img: assets.smirnoff_ice_tropical,
+    },
+    {
+      name: 'Lemon Refresh Bottle',
+      desc: 'Cool lemonade with a frosty bite',
+      img: assets.smirnoff_ice_lemon_refresh,
+    }
+  ];
+
   return (
     <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 animate-fade-in pt-28 sm:pt-32 pb-20 min-h-screen">
       <div className="text-center mb-12">
@@ -13,13 +41,29 @@ export default function Shop() {
         </p>
       </div>
 
-      <div className="text-center mb-16">
-        <img
-          src={assets.canBg}
-          alt="Smirnoff Ice"
-          className="max-w-sm mx-auto animate-float"
-          style={{ mixBlendMode: 'multiply', filter: 'drop-shadow(0 0.9375rem 1.875rem rgba(0,0,0,0.1))' }}
-        />
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 max-w-7xl mx-auto mb-16 px-4">
+        {products.map((product, idx) => (
+          <div key={idx} className="shop-card relative overflow-hidden group">
+            <div className="absolute inset-0 bg-gradient-to-br from-smirnoff-red/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+            <div className="flex flex-col items-center">
+              <div className="relative mb-6 w-full h-48 sm:h-56 flex items-center justify-center">
+                <div className="absolute inset-0 bg-smirnoff-red/10 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                <img
+                  src={product.img}
+                  alt={product.name}
+                  loading="lazy"
+                  className="max-h-full max-w-[80%] object-contain drop-shadow-2xl transform group-hover:scale-110 transition-transform duration-500"
+                />
+              </div>
+              <h3 className="font-bold text-lg mb-2 text-center">{product.name}</h3>
+              <p className="text-xs text-gray-500 mb-6 text-center">{product.desc}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="text-center mb-8">
+        <p className="text-lg font-bold text-gray-700 dark:text-gray-300 mb-4">Available at:</p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 max-w-2xl mx-auto">

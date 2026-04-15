@@ -31,6 +31,13 @@ import landingNewImg from './assets/landing_new.png';
 import eventPageBgImg from './assets/Event_page.png';
 import talentBgImg from './assets/talent_bg.png';
 
+// Product images
+import product440mlOriginal from './assets/440ml Original.png';
+import product440mlGaurana from './assets/440ml can Gaurana.png';
+import logoSmirnoffIce from './assets/smirnoff ice logo-1.png';
+
+import eventPhotoPaths from './galleryImages.json';
+
 const assets = {
   logo: logoImg,
   heroLineup: heroLineupImg,
@@ -64,6 +71,12 @@ const assets = {
   eventPageBg: eventPageBgImg,
   talentBg: talentBgImg,
   smirnoffBottle: smirnoffIceOriginalImg,
+  
+  product440mlOriginal: product440mlOriginal,
+  product440mlGaurana: product440mlGaurana,
+  logoSmirnoffIce: logoSmirnoffIce,
+  
+  eventPhotos: eventPhotoPaths,
 };
 
 export default assets;

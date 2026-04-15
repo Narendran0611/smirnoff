@@ -48,7 +48,7 @@ export default function Events() {
               className="event-card"
               onClick={() => handleEventClick(event.id)}
             >
-              <img src={assets[event.img]} alt={event.title} />
+              <img src={assets[event.img]} alt={event.title} loading="lazy" />
               <div className="event-overlay">
                 {event.icePass ? (
                   <span className="event-tag">🧊 IcePass Required</span>

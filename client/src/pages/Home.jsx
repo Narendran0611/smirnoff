@@ -3,15 +3,14 @@ import { Link } from 'react-router-dom';
 import assets from '../assets';
 
 const slides = [
-  { id: 1, img: assets.landingNew },
-  { id: 2, img: assets.smirnoff_ice_original },
-  { id: 3, img: assets.smirnoff_ice_party },
-  { id: 4, img: assets.smirnoff_ice_green_apple },
-  { id: 5, img: assets.smirnoff_ice_beach },
-  { id: 6, img: assets.smirnoff_ice_tropical },
-  { id: 7, img: assets.smirnoff_ice_lemon_refresh },
-  { id: 8, img: assets.smirnoff_ice_red_party },
-  { id: 9, img: assets.smirnoff_ice_collection },
+  { id: 1, img: assets.heroLineup },
+  { id: 2, img: '/carousel/carousel_bottles_lineup.jpg' },
+  { id: 3, img: '/carousel/carousel_double_black_banner.jpg' },
+  { id: 4, img: assets.landingNew },
+  { id: 5, img: '/carousel/carousel_bottle_closeup.jpg' },
+  { id: 6, img: '/carousel/carousel_brand_ambassador.jpg' },
+  { id: 7, img: '/carousel/carousel_party_sip.jpg' },
+  { id: 8, img: '/carousel/carousel_smirnoff_cups.jpg' },
 ];
 
 export default function Home() {
@@ -65,11 +64,12 @@ export default function Home() {
             className="flex transition-transform duration-700 ease-[cubic-bezier(0.25,0.1,0.25,1)]"
             style={{ transform: `translateX(-${activeSlide * 100}%)` }}
           >
-            {slides.map((slide) => (
+            {slides.map((slide, index) => (
               <div key={slide.id} className="w-full flex-shrink-0 relative">
                 <img 
                   src={slide.img} 
                   alt="Smirnoff Ice" 
+                  loading={index === 0 ? "eager" : "lazy"}
                   className="w-full h-[40vh] sm:h-[50vh] md:h-[60vh] lg:h-[65vh] object-cover"
                 />
               </div>
@@ -119,6 +119,57 @@ export default function Home() {
               }`}
             />
           ))}
+        </div>
+      </section>
+
+      {/* Flavours Section */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-16 sm:mt-24 mb-16 text-center">
+        <h2 className="text-3xl sm:text-5xl font-black italic mb-4 text-gray-950 dark:text-white uppercase tracking-tighter">
+          Meet The <span className="text-smirnoff-red">Flavours</span>
+        </h2>
+        <p className="text-gray-500 mb-12 max-w-2xl mx-auto">
+          Discover the perfect chill for every vibe. Which one are you grabbing?
+        </p>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          {[
+            { name: "Original", img: assets.smirnoff_ice_original },
+            { name: "Green Apple", img: assets.smirnoff_ice_green_apple },
+            { name: "Tropical", img: assets.smirnoff_ice_tropical },
+            { name: "Lemon Refresh", img: assets.smirnoff_ice_lemon_refresh }
+          ].map((flavour, idx) => (
+            <div key={idx} className="group flex flex-col items-center bg-gray-50 dark:bg-gray-900 rounded-3xl p-6 transition-all duration-300 hover:shadow-2xl hover:-translate-y-2">
+              <div className="h-48 sm:h-64 mb-6 relative w-full flex items-center justify-center">
+                <img 
+                  src={flavour.img} 
+                  alt={flavour.name} 
+                  loading="lazy"
+                  className="max-h-full object-contain transition-transform duration-500 group-hover:scale-110 drop-shadow-2xl"
+                />
+              </div>
+              <h3 className="text-lg sm:text-xl font-bold uppercase tracking-wide dark:text-gray-200">
+                {flavour.name}
+              </h3>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* CTA Shop Banner */}
+      <section className="relative w-full overflow-hidden mt-8 mb-0">
+        <div className="absolute inset-0 z-0">
+          <img src={assets.canTable} alt="Smirnoff Ice Table" loading="lazy" className="w-full h-full object-cover object-center filter brightness-[0.7] sm:brightness-[0.8]" />
+        </div>
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent z-10"></div>
+        <div className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 sm:py-32 flex flex-col items-center text-center">
+          <h2 className="text-3xl sm:text-5xl lg:text-6xl font-black italic text-white uppercase tracking-tighter mb-6" style={{ textShadow: '0 4px 15px rgba(0,0,0,0.5)' }}>
+            READY TO <span className="text-smirnoff-red">CHILL?</span>
+          </h2>
+          <p className="text-gray-200 text-lg sm:text-xl font-medium max-w-2xl mx-auto mb-8" style={{ textShadow: '0 2px 8px rgba(0,0,0,0.8)' }}>
+            Grab your favorite Smirnoff Ice flavors online and have them delivered straight to your door.
+          </p>
+          <Link to="/shop" className="btn py-4 px-12 text-sm sm:text-lg font-black uppercase italic tracking-wider">
+            SHOP NOW
+          </Link>
         </div>
       </section>
 
