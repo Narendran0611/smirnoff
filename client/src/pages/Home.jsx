@@ -3,14 +3,17 @@ import { Link } from 'react-router-dom';
 import assets from '../assets';
 
 const slides = [
-  { id: 1, img: assets.heroLineup },
-  { id: 2, img: '/carousel/carousel_bottles_lineup.jpg' },
-  { id: 3, img: '/carousel/carousel_double_black_banner.jpg' },
-  { id: 4, img: assets.landingNew },
-  { id: 5, img: '/carousel/carousel_bottle_closeup.jpg' },
-  { id: 6, img: '/carousel/carousel_brand_ambassador.jpg' },
-  { id: 7, img: '/carousel/carousel_party_sip.jpg' },
-  { id: 8, img: '/carousel/carousel_smirnoff_cups.jpg' },
+  { id: 1, img: '/carousel/carousel_beach_sunset.png' },
+  { id: 2, img: '/carousel/carousel_brand_girl.jpg' },
+  { id: 3, img: '/carousel/carousel_bottle_opening.jpg' },
+  { id: 4, img: '/carousel/carousel_bottle_bokeh.jpg' },
+  { id: 5, img: '/carousel/carousel_bottles_lineup.jpg' },
+  { id: 6, img: '/carousel/carousel_double_black_banner.jpg' },
+  { id: 7, img: assets.landingNew },
+  { id: 8, img: '/carousel/carousel_bottle_closeup.jpg' },
+  { id: 9, img: '/carousel/carousel_brand_ambassador.jpg' },
+  { id: 10, img: '/carousel/carousel_party_sip.jpg' },
+  { id: 11, img: '/carousel/carousel_smirnoff_cups.jpg' },
 ];
 
 export default function Home() {
