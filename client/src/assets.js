@@ -32,9 +32,9 @@ import eventPageBgImg from './assets/Event_page.png';
 import talentBgImg from './assets/talent_bg.png';
 
 // Product images
-import product440mlOriginal from './assets/440ml Original.png';
-import product440mlGaurana from './assets/440ml can Gaurana.png';
-import logoSmirnoffIce from './assets/smirnoff ice logo-1.png';
+import product440mlOriginal from './assets/440ml-Original.png';
+import product440mlGaurana from './assets/440ml-can-Gaurana.png';
+import logoSmirnoffIce from './assets/smirnoff-ice-logo-1.png';
 
 import eventPhotoPaths from './galleryImages.json';
 
