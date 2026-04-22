@@ -36,7 +36,7 @@ import product440mlOriginal from './assets/440ml-Original.png';
 import product440mlGaurana from './assets/440ml-can-Gaurana.png';
 import logoSmirnoffIce from './assets/smirnoff-ice-logo-1.png';
 
-import eventPhotoPaths from './galleryImages.json';
+import eventPhotoPaths from '../galleryImages.json';
 
 const assets = {
   logo: logoImg,
