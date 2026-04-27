@@ -2,6 +2,7 @@ const express = require('express');
 const path = require('path');
 const cors = require('cors');
 const { Pool } = require('pg');
+const sqlite3 = require('sqlite3');
 require('dotenv').config();
 
 const app = express();
@@ -12,90 +13,166 @@ app.use(express.json());
 
 app.use(express.static(path.join(__dirname, '../client/dist')));
 
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL
-});
+let dbEngine = 'postgres';
+let pool = null;
+let sqliteDb = null;
 
+if (process.env.DATABASE_URL) {
+  console.log('🔗 Using PostgreSQL (DATABASE_URL detected)');
+  pool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+    ssl: process.env.DATABASE_URL.includes('localhost') ? false : { rejectUnauthorized: false }
+  });
+} else {
+  console.log('🔗 Using Local SQLite (Fallback Mode)');
+  dbEngine = 'sqlite';
+  sqliteDb = new sqlite3.Database(path.join(__dirname, 'smirnoff.db'));
+}
+
+/**
+ * Universal Database Wrapper
+ * Handles syntax differences between Postgres ($1) and SQLite (?)
+ */
 const db = {
-  query: (text, params) => pool.query(text, params),
-  get: (text, params) => pool.query(text, params).then(res => res.rows[0]),
-  all: (text, params) => pool.query(text, params).then(res => res.rows),
-  run: (text, params) => pool.query(text, params)
+  query: (text, params = []) => {
+    if (dbEngine === 'postgres') {
+      return pool.query(text, params);
+    } else {
+      // Convert $1, $2... to ?, ?... for SQLite
+      const sqliteText = text.replace(/\$\d+/g, '?');
+      return new Promise((resolve, reject) => {
+        sqliteDb.run(sqliteText, params, function(err) {
+          if (err) reject(err);
+          else resolve({ rows: [], lastID: this.lastID, changes: this.changes });
+        });
+      });
+    }
+  },
+  get: (text, params = []) => {
+    if (dbEngine === 'postgres') {
+      return pool.query(text, params).then(res => res.rows[0]);
+    } else {
+      const sqliteText = text.replace(/\$\d+/g, '?');
+      return new Promise((resolve, reject) => {
+        sqliteDb.get(sqliteText, params, (err, row) => {
+          if (err) reject(err);
+          else resolve(row);
+        });
+      });
+    }
+  },
+  all: (text, params = []) => {
+    if (dbEngine === 'postgres') {
+      return pool.query(text, params).then(res => res.rows);
+    } else {
+      const sqliteText = text.replace(/\$\d+/g, '?');
+      return new Promise((resolve, reject) => {
+        sqliteDb.all(sqliteText, params, (err, rows) => {
+          if (err) reject(err);
+          else resolve(rows);
+        });
+      });
+    }
+  }
 };
 
-console.log('✅ PostgreSQL Database Connected');
+// Helper to handle auto-increment syntax difference
+const SERIAL_TYPE = dbEngine === 'postgres' ? 'SERIAL' : 'INTEGER';
+const PK_AUTO = dbEngine === 'postgres' ? 'PRIMARY KEY' : 'PRIMARY KEY AUTOINCREMENT';
+const NOW_FUNC = dbEngine === 'postgres' ? 'CURRENT_TIMESTAMP' : "datetime('now')";
 
-db.query(`
-  CREATE TABLE IF NOT EXISTS users (
-    phone TEXT PRIMARY KEY,
-    points INTEGER DEFAULT 0,
-    ice_pass_count INTEGER DEFAULT 0,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-  )
-`);
+// Verify connection and run schema
+const initDb = async () => {
+  try {
+    if (dbEngine === 'postgres') {
+      await db.query('SELECT NOW()');
+      console.log('✅ PostgreSQL Database Connected');
+    } else {
+      console.log('✅ SQLite Database Connected');
+    }
 
-db.query(`
-  CREATE TABLE IF NOT EXISTS codes (
-    id SERIAL PRIMARY KEY,
-    code TEXT UNIQUE NOT NULL,
-    points INTEGER DEFAULT 50,
-    prize TEXT,
-    used INTEGER DEFAULT 0,
-    used_by TEXT,
-    used_at TIMESTAMP,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-  )
-`);
+    await db.query(`
+      CREATE TABLE IF NOT EXISTS users (
+        phone TEXT PRIMARY KEY,
+        points INTEGER DEFAULT 0,
+        ice_pass_count INTEGER DEFAULT 0,
+        created_at TEXT DEFAULT ${NOW_FUNC}
+      )
+    `);
 
-db.query(`
-  CREATE TABLE IF NOT EXISTS transactions (
-    id SERIAL PRIMARY KEY,
-    phone TEXT NOT NULL,
-    type TEXT NOT NULL,
-    label TEXT NOT NULL,
-    points INTEGER DEFAULT 0,
-    date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    status TEXT DEFAULT 'completed'
-  )
-`);
+    await db.query(`
+      CREATE TABLE IF NOT EXISTS codes (
+        id ${SERIAL_TYPE} ${PK_AUTO},
+        code TEXT UNIQUE NOT NULL,
+        points INTEGER DEFAULT 50,
+        prize TEXT,
+        used INTEGER DEFAULT 0,
+        used_by TEXT,
+        used_at TEXT,
+        created_at TEXT DEFAULT ${NOW_FUNC}
+      )
+    `);
 
-db.query(`
-  CREATE TABLE IF NOT EXISTS talents (
-    id SERIAL PRIMARY KEY,
-    name TEXT NOT NULL,
-    category TEXT NOT NULL,
-    bio TEXT,
-    video_link TEXT,
-    phone TEXT,
-    votes INTEGER DEFAULT 0,
-    status TEXT DEFAULT 'pending',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-  )
-`);
+    await db.query(`
+      CREATE TABLE IF NOT EXISTS transactions (
+        id ${SERIAL_TYPE} ${PK_AUTO},
+        phone TEXT NOT NULL,
+        type TEXT NOT NULL,
+        label TEXT NOT NULL,
+        points INTEGER DEFAULT 0,
+        date TEXT DEFAULT ${NOW_FUNC},
+        status TEXT DEFAULT 'completed'
+      )
+    `);
 
-db.query(`
-  CREATE TABLE IF NOT EXISTS game_spins (
-    id SERIAL PRIMARY KEY,
-    phone TEXT NOT NULL,
-    points_won INTEGER DEFAULT 0,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-  )
-`);
+    await db.query(`
+      CREATE TABLE IF NOT EXISTS talents (
+        id ${SERIAL_TYPE} ${PK_AUTO},
+        name TEXT NOT NULL,
+        category TEXT NOT NULL,
+        bio TEXT,
+        video_link TEXT,
+        phone TEXT,
+        votes INTEGER DEFAULT 0,
+        status TEXT DEFAULT 'pending',
+        created_at TEXT DEFAULT ${NOW_FUNC}
+      )
+    `);
 
-db.query(`
-  CREATE TABLE IF NOT EXISTS events (
-    id SERIAL PRIMARY KEY,
-    title TEXT NOT NULL,
-    date TEXT,
-    venue TEXT,
-    description TEXT,
-    ice_pass_required INTEGER DEFAULT 0,
-    image TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-  )
-`);
+    await db.query(`
+      CREATE TABLE IF NOT EXISTS game_spins (
+        id ${SERIAL_TYPE} ${PK_AUTO},
+        phone TEXT NOT NULL,
+        points_won INTEGER DEFAULT 0,
+        created_at TEXT DEFAULT ${NOW_FUNC}
+      )
+    `);
 
-console.log('✅ Database Schema verified');
+    await db.query(`
+      CREATE TABLE IF NOT EXISTS events (
+        id ${SERIAL_TYPE} ${PK_AUTO},
+        title TEXT NOT NULL,
+        date TEXT,
+        venue TEXT,
+        description TEXT,
+        ice_pass_required INTEGER DEFAULT 0,
+        image TEXT,
+        created_at TEXT DEFAULT ${NOW_FUNC}
+      )
+    `);
+
+    console.log('✅ Database Schema verified');
+  } catch (err) {
+    console.error('❌ Database Initialization Failed:');
+    console.error('   Engine:', dbEngine);
+    console.error('   Message:', err.message);
+    if (err.code === 'ECONNREFUSED' && dbEngine === 'postgres') {
+      console.error('   💡 HINT: PostgreSQL connection refused. If you want to use local mode, remove DATABASE_URL.');
+    }
+  }
+};
+
+initDb();
 
 const getOrCreateUser = async (phone) => {
   let user = await db.get('SELECT * FROM users WHERE phone = $1', [phone]);
