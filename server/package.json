@@ -1,7 +1,7 @@
 {
-  "name": "smirnoff-ice-backend",
+  "name": "guinness-fes-ncp-backend",
   "version": "1.0.0",
-  "description": "Backend API for Smirnoff Ice microsite with SQLite database",
+  "description": "Backend API for Guinness FES NCP microsite with PostgreSQL database",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -11,6 +11,7 @@
   "dependencies": {
     "express": "^4.18.0",
     "cors": "^2.8.5",
-    "better-sqlite3": "^11.0.0"
+    "pg": "^8.11.0",
+    "dotenv": "^16.0.0"
   }
 }
