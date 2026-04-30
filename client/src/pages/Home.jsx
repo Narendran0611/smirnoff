@@ -3,17 +3,17 @@ import { Link } from 'react-router-dom';
 import assets from '../assets';
 
 const slides = [
-  { id: 1, img: '/carousel/carousel_beach_sunset.png' },
-  { id: 2, img: '/carousel/carousel_brand_girl.jpg' },
-  { id: 3, img: '/carousel/carousel_bottle_opening.jpg' },
-  { id: 4, img: '/carousel/carousel_bottle_bokeh.jpg' },
-  { id: 5, img: '/carousel/carousel_bottles_lineup.jpg' },
-  { id: 6, img: '/carousel/carousel_double_black_banner.jpg' },
-  { id: 7, img: assets.landingNew },
-  { id: 8, img: '/carousel/carousel_bottle_closeup.jpg' },
-  { id: 9, img: '/carousel/carousel_brand_ambassador.jpg' },
-  { id: 10, img: '/carousel/carousel_party_sip.jpg' },
-  { id: 11, img: '/carousel/carousel_smirnoff_cups.jpg' },
+  { id: 1, img: '/home/homepage1.jpg' },
+  { id: 2, img: '/home/homepage2.jpg' },
+  { id: 3, img: '/home/homepage3.jpg' },
+  { id: 4, img: '/home/homepage4.jpg' },
+  { id: 5, img: '/home/homepage5.jpg' },
+  { id: 6, img: '/home/homepage6.jpg' },
+  { id: 7, img: '/home/homepage7.jpg' },
+  { id: 8, img: '/home/homepage8.jpg' },
+  { id: 9, img: '/home/homepage9.jpg' },
+  { id: 10, img: '/home/homepage10.jpg' },
+  { id: 11, img: '/home/homepage11.jpg' },
 ];
 
 export default function Home() {
@@ -34,10 +34,10 @@ export default function Home() {
 
   return (
     <div className="animate-fade-in w-full overflow-x-hidden pt-24 sm:pt-32 pb-4 bg-white dark:bg-gray-950">
-      
+
       {/* Hero Text */}
       <section className="flex flex-col items-center text-center px-4 max-w-7xl mx-auto mb-12">
-        <span className="section-label bg-smirnoff-red text-white py-1.5 px-6 inline-block font-black text-xs sm:text-sm tracking-widest italic mb-6" 
+        <span className="section-label bg-smirnoff-red text-white py-1.5 px-6 inline-block font-black text-xs sm:text-sm tracking-widest italic mb-6"
           style={{ clipPath: 'polygon(3% 0%, 100% 0%, 97% 100%, 0% 100%)' }}>
           POP. ENTER. CHILL.
         </span>
@@ -55,23 +55,23 @@ export default function Home() {
 
       {/* === PREMIUM CAROUSEL (80% width) === */}
       <section className="w-[90%] sm:w-[85%] lg:w-[80%] mx-auto relative mb-6">
-        
+
         {/* Carousel Container */}
-        <div className="relative overflow-hidden rounded-3xl" 
-          style={{ 
+        <div className="relative overflow-hidden rounded-3xl"
+          style={{
             boxShadow: '0 25px 60px rgba(0,0,0,0.15), 0 0 0 1px rgba(255,255,255,0.05)',
           }}>
-          
+
           {/* Slide Track */}
-          <div 
+          <div
             className="flex transition-transform duration-700 ease-[cubic-bezier(0.25,0.1,0.25,1)]"
             style={{ transform: `translateX(-${activeSlide * 100}%)` }}
           >
             {slides.map((slide, index) => (
               <div key={slide.id} className="w-full flex-shrink-0 relative">
-                <img 
-                  src={slide.img} 
-                  alt="Smirnoff Ice" 
+                <img
+                  src={slide.img}
+                  alt="Smirnoff Ice"
                   loading={index === 0 ? "eager" : "lazy"}
                   className="w-full h-[40vh] sm:h-[50vh] md:h-[60vh] lg:h-[65vh] object-cover"
                 />
@@ -84,7 +84,7 @@ export default function Home() {
           <div className="absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-black/30 to-transparent pointer-events-none z-10"></div>
 
           {/* Left Arrow */}
-          <button 
+          <button
             onClick={prevSlide}
             className="absolute left-4 sm:left-6 top-1/2 -translate-y-1/2 z-20 w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-white/20 backdrop-blur-md border border-white/30 shadow-2xl flex items-center justify-center hover:bg-white/40 hover:scale-110 transition-all duration-300"
           >
@@ -94,7 +94,7 @@ export default function Home() {
           </button>
 
           {/* Right Arrow */}
-          <button 
+          <button
             onClick={nextSlide}
             className="absolute right-4 sm:right-6 top-1/2 -translate-y-1/2 z-20 w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-white/20 backdrop-blur-md border border-white/30 shadow-2xl flex items-center justify-center hover:bg-white/40 hover:scale-110 transition-all duration-300"
           >
@@ -115,11 +115,10 @@ export default function Home() {
             <button
               key={index}
               onClick={() => setActiveSlide(index)}
-              className={`rounded-full transition-all duration-500 ${
-                index === activeSlide 
-                  ? 'w-10 h-3 bg-smirnoff-red shadow-lg shadow-smirnoff-red/30' 
+              className={`rounded-full transition-all duration-500 ${index === activeSlide
+                  ? 'w-10 h-3 bg-smirnoff-red shadow-lg shadow-smirnoff-red/30'
                   : 'w-3 h-3 bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 hover:scale-125'
-              }`}
+                }`}
             />
           ))}
         </div>
@@ -142,9 +141,9 @@ export default function Home() {
           ].map((flavour, idx) => (
             <div key={idx} className="group flex flex-col items-center bg-gray-50 dark:bg-gray-900 rounded-3xl p-6 transition-all duration-300 hover:shadow-2xl hover:-translate-y-2">
               <div className="h-48 sm:h-64 mb-6 relative w-full flex items-center justify-center">
-                <img 
-                  src={flavour.img} 
-                  alt={flavour.name} 
+                <img
+                  src={flavour.img}
+                  alt={flavour.name}
                   loading="lazy"
                   className="max-h-full object-contain transition-transform duration-500 group-hover:scale-110 drop-shadow-2xl"
                 />
