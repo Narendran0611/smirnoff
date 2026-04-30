@@ -17,12 +17,12 @@ const initialUser = {
 };
 
 const eventsData = [
-  { id: 1, title: 'AMVCA After-Party', date: 'April 5, 2026', venue: 'Eko Hotel, Lagos', desc: 'The biggest party after the AMVCA awards. Smirnoff Ice exclusive.', icePass: true, img: 'eventParty' },
-  { id: 2, title: 'Smirnoff Ice Party – Coming Soon', date: 'April 20, 2026', venue: 'Hard Rock Café, Lagos', desc: 'A premium night of vibes, music, and unlimited chill. IcePass holders get VIP entry.', icePass: true, img: 'eventFestival' },
-  { id: 3, title: 'Group Therapy Sessions', date: 'May 1, 2026', venue: 'The Chill Zone, Victoria Island', desc: 'Good vibes only. Talk, laugh, chill with Smirnoff Ice.', icePass: false, img: 'eventPopup' },
-  { id: 4, title: 'Chill Talent Academy Showcase', date: 'May 15, 2026', venue: 'Terra Kulture, Lagos', desc: 'Watch the top talents from the Chill Talent Academy compete live.', icePass: false, img: 'eventParty' },
-  { id: 5, title: 'South Social Club', date: 'June 1, 2026', venue: 'Muri Okunola Park, Lagos', desc: 'An outdoor chill fest with live DJs, food, and Smirnoff Ice.', icePass: false, img: 'eventFestival' },
-  { id: 6, title: 'Chill Buddies Meet & Greet', date: 'June 10, 2026', venue: 'Landmark Beach, Lagos', desc: 'A special hangout for loyal Smirnoff Ice fans. Free entry with IcePass.', icePass: true, img: 'eventPopup' }
+  { id: 1, title: 'AMVCA After-Party', date: 'April 5, 2026', venue: 'Eko Hotel, Lagos', desc: 'The biggest party after the AMVCA awards. Smirnoff Ice exclusive.', icePass: true, img: 'event1'},
+  { id: 2, title: 'Smirnoff Ice Party – Coming Soon', date: 'April 20, 2026', venue: 'Hard Rock Café, Lagos', desc: 'A premium night of vibes, music, and unlimited chill. IcePass holders get VIP entry.', icePass: true, img: 'event2'},
+  { id: 3, title: 'Group Therapy Sessions', date: 'May 1, 2026', venue: 'The Chill Zone, Victoria Island', desc: 'Good vibes only. Talk, laugh, chill with Smirnoff Ice.', icePass: false, img: 'event3'},
+  { id: 4, title: 'Chill Talent Academy Showcase', date: 'May 15, 2026', venue: 'Terra Kulture, Lagos', desc: 'Watch the top talents from the Chill Talent Academy compete live.', icePass: false, img: 'event4'},
+  { id: 5, title: 'South Social Club', date: 'June 1, 2026', venue: 'Muri Okunola Park, Lagos', desc: 'An outdoor chill fest with live DJs, food, and Smirnoff Ice.', icePass: false, img: 'event5'},
+  { id: 6, title: 'Chill Buddies Meet & Greet', date: 'June 10, 2026', venue: 'Landmark Beach, Lagos', desc: 'A special hangout for loyal Smirnoff Ice fans. Free entry with IcePass.', icePass: true, img: 'event6'},
 ];
 
 const mockTalents = [
